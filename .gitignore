@@ -4,6 +4,8 @@
 /storage/*.key
 /vendor
 .env
+.idea
+/public/mix-manifest.json
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml

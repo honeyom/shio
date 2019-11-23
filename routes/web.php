@@ -25,8 +25,13 @@ Route::group([
         ->name('verificationCodes.store');
     Route::post('users','UsersController@store')->name('users.store');
 
+    Route::get('user_addresses/{user_address}', 'UserAddressesController@edit')->name('user_addresses.edit');
+    Route::put('user_addresses/{user_address}', 'UserAddressesController@update')->name('user_addresses.update');
+    Route::delete('user_addresses/{user_address}', 'UserAddressesController@destroy')->name('user_addresses.destroy');
+
 });
 Route::get('/', 'PagesController@root')->name('root');
 Route::get('user_addresses/create', 'UserAddressesController@create')->name('user_addresses.create');
 //['middleware' => ['auth', 'verified']
+
 

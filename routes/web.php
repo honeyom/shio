@@ -33,5 +33,7 @@ Route::group([
 Route::get('/', 'PagesController@root')->name('root');
 Route::get('user_addresses/create', 'UserAddressesController@create')->name('user_addresses.create');
 //['middleware' => ['auth', 'verified']
+Route::redirect('/','/products')->name('root');
+Route::get('products','PrductsController@index')->name('products.index');
 
 

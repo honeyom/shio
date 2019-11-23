@@ -1,0 +1,16 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Product;
+use Illuminate\Http\Request;
+
+class PrductsController extends Controller
+{
+    //
+    public function index(Request $request){
+        $products=Product::query()->where('on_sale',true)->paginate();
+//        return view('products.index',['products'=>$products]);
+        dd($products);
+    }
+}

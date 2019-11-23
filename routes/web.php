@@ -26,4 +26,5 @@ Route::group([
     Route::post('users','UsersController@store')->name('users.store');
 });
 Route::get('/', 'PagesController@root')->name('root');
+//['middleware' => ['auth', 'verified']
 

@@ -14,8 +14,16 @@
 //Route::get('/', function () {
 //    return view('welcome');
 //});
+
+Route::group([
+    'middleware'=>'api.throttle',
+    'limit'=>config('app.rate_limits.sign.limit'),
+    'expires'=>config('app.rate_limits.sign.expires'),
+],function(){
+    //短信验证码
+    Route::post('verifyCode', 'VerificationCodeController@store')
+        ->name('verificationCodes.store');
+    Route::post('users','UsersController@store')->name('users.store');
+});
 Route::get('/', 'PagesController@root')->name('root');
-//短信验证码
-Route::post('verifyCode', 'VerificationCodeController@store')
-    ->name('verificationCodes.store');
-Route::post('users','UsersController@store')->name('users.store');
+

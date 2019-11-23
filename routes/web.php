@@ -24,7 +24,9 @@ Route::group([
     Route::post('verifyCode', 'VerificationCodeController@store')
         ->name('verificationCodes.store');
     Route::post('users','UsersController@store')->name('users.store');
+
 });
 Route::get('/', 'PagesController@root')->name('root');
+Route::get('user_addresses/create', 'UserAddressesController@create')->name('user_addresses.create');
 //['middleware' => ['auth', 'verified']
 

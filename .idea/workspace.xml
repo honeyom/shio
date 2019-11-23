@@ -29,7 +29,7 @@
         <entry file="file://$PROJECT_DIR$/routes/web.php">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="143">
-              <caret line="37" lean-forward="true" selection-start-line="37" selection-end-line="37" />
+              <caret line="37" selection-start-line="37" selection-end-line="37" />
             </state>
           </provider>
         </entry>
@@ -47,7 +47,7 @@
         <entry file="file://$PROJECT_DIR$/app/Admin/routes.php">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="396">
-              <caret line="18" column="45" lean-forward="true" selection-start-line="18" selection-start-column="45" selection-end-line="18" selection-end-column="45" />
+              <caret line="18" column="45" selection-start-line="18" selection-start-column="45" selection-end-line="18" selection-end-column="45" />
             </state>
           </provider>
         </entry>
@@ -76,8 +76,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/Http/Controllers/PrductsController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="178">
-              <caret line="47" column="73" selection-start-line="47" selection-start-column="73" selection-end-line="47" selection-end-column="73" />
+            <state relative-caret-position="266">
+              <caret line="63" column="5" lean-forward="true" selection-start-line="63" selection-start-column="5" selection-end-line="63" selection-end-column="5" />
               <folding>
                 <element signature="e#40#63#0#PHP" expanded="true" />
               </folding>
@@ -376,12 +376,12 @@
       <option name="presentableId" value="Default" />
       <updated>1574463274953</updated>
       <workItem from="1574463276497" duration="17643000" />
-      <workItem from="1574487243358" duration="21500000" />
+      <workItem from="1574487243358" duration="22028000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="39143000" />
+    <option name="totallyTimeSpent" value="39671000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-11" y="0" width="1460" height="493" extended-state="0" />
@@ -742,14 +742,14 @@
     <entry file="file://$PROJECT_DIR$/app/Admin/routes.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="396">
-          <caret line="18" column="45" lean-forward="true" selection-start-line="18" selection-start-column="45" selection-end-line="18" selection-end-column="45" />
+          <caret line="18" column="45" selection-start-line="18" selection-start-column="45" selection-end-line="18" selection-end-column="45" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/routes/web.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="143">
-          <caret line="37" lean-forward="true" selection-start-line="37" selection-end-line="37" />
+          <caret line="37" selection-start-line="37" selection-end-line="37" />
         </state>
       </provider>
     </entry>
@@ -779,8 +779,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/Http/Controllers/PrductsController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="178">
-          <caret line="47" column="73" selection-start-line="47" selection-start-column="73" selection-end-line="47" selection-end-column="73" />
+        <state relative-caret-position="266">
+          <caret line="63" column="5" lean-forward="true" selection-start-line="63" selection-start-column="5" selection-end-line="63" selection-end-column="5" />
           <folding>
             <element signature="e#40#63#0#PHP" expanded="true" />
           </folding>

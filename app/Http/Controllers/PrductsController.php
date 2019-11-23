@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use mysql_xdevapi\Exception;
 
 class PrductsController extends Controller
 {
@@ -54,5 +55,11 @@ class PrductsController extends Controller
 //                $('.search-form').submit();
 //            });
 //        });
+    }
+    public function show(Product $product,Request $request){
+        if(!$product->on_sale){
+            throw new Exception('商品未上架');
+        }
+//        return view('pructs.show',['product'=>$product]);
     }
 }

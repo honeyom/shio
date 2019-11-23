@@ -15,3 +15,7 @@
 //    return view('welcome');
 //});
 Route::get('/', 'PagesController@root')->name('root');
+//短信验证码
+Route::post('verifyCode', 'VerificationCodeController@store')
+    ->name('verificationCodes.store');
+Route::post('users','UsersController@store')->name('users.store');

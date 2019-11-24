@@ -35,5 +35,6 @@ Route::get('user_addresses/create', 'UserAddressesController@create')->name('use
 //['middleware' => ['auth', 'verified']
 Route::redirect('/','/products')->name('root');
 Route::get('products','PrductsController@index')->name('products.index');
-
+Route::post('products/{product}/favorite', 'ProductsController@favor')->name('products.favor');
+Route::delete('products/{product}/favorite', 'ProductsController@disfavor')->name('products.disfavor');
 

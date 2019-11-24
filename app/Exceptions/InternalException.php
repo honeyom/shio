@@ -12,7 +12,7 @@ class InternalException extends Exception
     public function __construct($message = "", $code = 0,$msgForUser="系统内部错误", Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
-        $this->msgForUser=$msgForUser
+        $this->msgForUser=$msgForUser;
     }
     public function rendor(Request $request){
         if($request->expectsJson()){

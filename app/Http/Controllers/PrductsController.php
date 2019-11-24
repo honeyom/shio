@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\InternalException;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use mysql_xdevapi\Exception;
@@ -58,8 +59,32 @@ class PrductsController extends Controller
     }
     public function show(Product $product,Request $request){
         if(!$product->on_sale){
-            throw new Exception('商品未上架');
+            throw new InternalException('商品未上架');
         }
+        $favored=false;
+        // 用户未登录时返回的是 null，已登录时返回的是对应的用户对象
+        if($user=$request->user()){
+            //当前用户已收藏的商品中搜索id为当前商品id的商品
+            $favored=boolval($user->favoriteProducts()->find($product->id));
+
+        }
+//        return view('products.show', ['product' => $product, 'favored' => $favored]);
 //        return view('pructs.show',['product'=>$product]);
+    }
+
+//新增收藏的接口
+    public function favor(Product $product,Request $request){
+        $user=$request->user();
+        if($user->favoriteProducts()->find($product->id)){
+            return [];
+        }
+        $user->favoriteProductss()->attach($product);
+        return [];
+    }
+    //取消收藏
+    public function disfavor(Product $product,Request $request){
+        $user=$request->user();
+        $user->favoriteProducts()->detach($product);
+        return [];
     }
 }

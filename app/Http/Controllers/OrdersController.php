@@ -7,6 +7,7 @@ use App\Jobs\CloseOrder;
 use App\Models\ProductSku;
 use App\Models\UserAddress;
 use App\Models\Order;
+use App\Services\CartService;
 use Carbon\Carbon;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
@@ -52,7 +53,7 @@ class OrdersController extends Controller
             //更新订单总额
             $order->update(['total_amount'=>$totalAmount]);
             //讲下单的商品从购物车中移除
-            $skuIds=collect($items)->pluck('sku_id');
+            $skuIds=collect($items)->pluck('sku_id')->all;
             $user->cartItems()->where('product_sku_id',$skuIds)->delete();
 
             return $order;
@@ -76,4 +77,18 @@ class OrdersController extends Controller
 //            load与with预加载类似,load是已经查询出来的模型上调用,with是在查询构造器上调用
     }
 
+}
+
+//自动解析功能注入 CartService 类
+
+class OrdersController2 extends Controller{
+
+    public  function store(OrderRequest $request,CartService $cartService){
+        $user=$request->user();
+        $order=DB::transaction(function () use($user,$request,$cartService){
+            //讲下单的商品从购物车中移除
+            $skuIds=collect($request->input('items'))->pluck('sku_id')->all();
+            $cartService->remove($skuIds);
+        });
+    }
 }

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AddCartRequest;
+use App\Models\ProductSku;
+use App\Services\CartService;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
@@ -38,4 +41,30 @@ class CartController extends Controller
     }
 
 
+}
+
+//改编版购物车.(优化 )
+class CartController2 extends Controller{
+
+    protected $cartServer;
+    //自动解析功能注入 CartService 类
+    public function __construct(CartService $cartService)
+    {
+        $this->cartServer=$cartService;
+
+    }
+
+    public function index(Request $request){
+        $cartItems=$this->cartServer->get();
+        $addresses=$request->user()->address()->orderBy('last_used_at','desc')->get();
+        return view('cart.index',['cartItems'=>$cartItems,'addresses'=>$addresses]);
+    }
+    public function add(AddCartRequest $request){
+        $$this->cartServer->add([$request->input('sku_id'),$request->input('amount')]);
+        return [];
+    }
+    public function remove(ProductSku $sku,Request $request){
+        $this->cartServer->remove($sku->id);
+        return [];
+    }
 }

@@ -25,4 +25,15 @@ class CartController extends Controller
     	}
     	return [];
     }
+    //查看购物车
+    public function index(Request $request){
+    	$cartItems=$request->user()->cartItems()->with(['productSku.product'])->get();
+    	return view('cart.index',['cartItems'=>$cartItems]);
+    }
+    //移除购物车
+    public function remove(ProductSku $sku,Request $request){
+    	$request->user()->cartItems()->where('product_sku_id',$sku_id)->delete();
+    	return [];
+    }
+    
 }

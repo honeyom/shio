@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Exceptions\InternalException;
 use App\Http\Requests\OrderRequest;
+use App\Jobs\CloseOrder;
 use App\Models\ProductSku;
 use App\Models\UserAddress;
 use App\Models\Order;
@@ -57,7 +58,8 @@ class OrdersController extends Controller
             return $order;
 
         });
-
+        //订单创建之后,防止一直下订单,不支付,暂用库存,在一定时间内执行定时任务,关闭订单,把库存还回去
+            $this->dispatch(new CloseOrder($order,config('app.order_ttl')));
         return $order;
     }
 

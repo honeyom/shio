@@ -239,4 +239,6 @@ return [
             'limit'  => env('SIGN_RATE_LIMITS', 10),
         ],
     ],
+//    'order_ttl' => 30,//订单未支付占用库存 30秒自动关闭
+    'order_ttl' => 1800,
 ];

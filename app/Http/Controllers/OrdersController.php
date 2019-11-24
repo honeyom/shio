@@ -70,5 +70,10 @@ class OrdersController extends Controller
         ->paginate();
     return view('orders.index',['orders'=>$orders]);
     }
+    public function show(Order $order,Request $request){
+            $this->authorize('own',$order);
+            return view('orders.show',['order'=>$order->load(['items.productSku','items.product'])]);
+//            load与with预加载类似,load是已经查询出来的模型上调用,with是在查询构造器上调用
+    }
 
 }

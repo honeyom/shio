@@ -40,5 +40,6 @@ Route::delete('products/{product}/favorite', 'ProductsController@disfavor')->nam
 Route::get('products/favorites', 'ProductsController@favorites')->name('products.favorites');
 Route::post('cart','CartController@add')->name('cart.add');
 Route::get('orders', 'OrdersController@index')->name('orders.index');
+Route::get('orders/{order}', 'OrdersController@show')->name('orders.show');
 
 

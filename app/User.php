@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\CartItem;
 use App\Models\Product;
 use App\Models\UserAddress;
 use Illuminate\Notifications\Notifiable;

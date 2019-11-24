@@ -28,12 +28,14 @@ class CartController extends Controller
     //查看购物车
     public function index(Request $request){
     	$cartItems=$request->user()->cartItems()->with(['productSku.product'])->get();
-    	return view('cart.index',['cartItems'=>$cartItems]);
+        $addresses = $request->user()->addresses()->orderBy('last_used_at', 'desc')->get();
+        return view('cart.index', ['cartItems' => $cartItems, 'addresses' => $addresses]);
     }
     //移除购物车
     public function remove(ProductSku $sku,Request $request){
     	$request->user()->cartItems()->where('product_sku_id',$sku_id)->delete();
     	return [];
     }
-    
+
+
 }

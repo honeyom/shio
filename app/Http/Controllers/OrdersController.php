@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 use App\Exceptions\InternalException;
+use App\Exceptions\InvalidRequestException;
+use App\Http\Requests\ApplyRefundRequest;
+use App\Http\Requests\HandleRefundRequest;
 use App\Http\Requests\OrderRequest;
 use App\Jobs\CloseOrder;
 use App\Models\ProductSku;
@@ -12,7 +15,8 @@ use Carbon\Carbon;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use App\Models\CouponCode;
+use App\Exceptions\CouponCodeUnavailableException;
 class OrdersController extends Controller
 {
     //
@@ -83,12 +87,128 @@ class OrdersController extends Controller
 
 class OrdersController2 extends Controller{
 
-    public  function store(OrderRequest $request,CartService $cartService){
+    public  function store(OrderRequest $request,CartService $cartService,CouponCode $coupon = null){
+
         $user=$request->user();
-        $order=DB::transaction(function () use($user,$request,$cartService){
+        // 如果传入了优惠券，则先检查是否可用
+        if ($coupon) {
+            // 但此时我们还没有计算出订单总金额，因此先不校验
+            $coupon->checkAvailable();
+        }
+//        $coupon 也放到了 use 中
+        $order=DB::transaction(function () use($user,$request,$cartService,$coupon){
+            if ($coupon) {
+                // 总金额已经计算出来了，检查是否符合优惠券规则
+                $coupon->checkAvailable($totalAmount);
+                // 把订单金额修改为优惠后的金额
+                $totalAmount = $coupon->getAdjustedPrice($totalAmount);
+                // 将订单与优惠券关联
+                $order->couponCode()->associate($coupon);
+                // 增加优惠券的用量，需判断返回值
+                if ($coupon->changeUsed() <= 0) {
+                    throw new CouponCodeUnavailableException('该优惠券已被兑完');
+                }
+            }
             //讲下单的商品从购物车中移除
             $skuIds=collect($request->input('items'))->pluck('sku_id')->all();
             $cartService->remove($skuIds);
         });
     }
+
+
+    //1.申请退款
+    public function applayRefund(Order $order,ApplyRefundRequest $request){
+        //校验订单是否属于当前用户
+        $this->authorize('owen',$order);
+        //判断订单是否已付款
+        if(!$order->paid_at){
+            throw new InvalidRequestException('订单未支付,不可退款');
+        }
+        //判断订单状态是否正确
+        if($order->refund_status !==Order::REFUND_STATUS_PENDING){
+            throw  new InvalidRequestException('订单已经申请过退款,不要重复申请');
+        }
+        $extra=$order->exists??[];
+        $extra['refund_reason']=$request->input('reason');
+        $order->update([
+            'refund_status'=>Order::REFUND_STATUS_APPLIED,
+            'extra'=>$extra,
+        ]);
+        return $order;
+
+    }
+    //2.拒绝退款
+    public function handleRefund(Order $order,HandleRefundRequest $request){
+        //判断订单状态是否正确
+        if($order->refund_status !==Order::REFUND_STATUS_APPLIED ){
+            throw new InvalidRequestException('订单状态不正确');
+        }
+        //是否同意退款
+        if($request->input('agree')){
+            //todo            //同意退款
+            $extra = $order->extra ?: [];
+            unset($extra['refund_disagree_reason']);
+            $order->update([
+                'extra' => $extra,
+            ]);
+            // 调用退款逻辑
+            $this->_refundOrder($order);
+        }else{
+            //拒绝退款
+            //清空退款理由
+            $extra=$order->exists?:[];
+            $extra['refund_disagree_reason'] = $request->input('reason');
+            // 将订单的退款状态改为未退款
+            $order->update([
+                'refund_status' => Order::REFUND_STATUS_PENDING,
+                'extra'         => $extra,
+            ]);
+        }
+        return $order;
+
+    }
+    //3.同意退款
+    protected function _refundOrder(Order $order)
+    {
+        // 判断该订单的支付方式
+        switch ($order->payment_method) {
+            case 'wechat':
+                // 微信的先留空
+                // todo
+                break;
+            case 'alipay':
+                // 用我们刚刚写的方法来生成一个退款订单号
+                $refundNo = Order::getAvailableRefundNo();
+                // 调用支付宝支付实例的 refund 方法
+                $ret = app('alipay')->refund([
+                    'out_trade_no' => $order->no, // 之前的订单流水号
+                    'refund_amount' => $order->total_amount, // 退款金额，单位元
+                    'out_request_no' => $refundNo, // 退款订单号
+                ]);
+                // 根据支付宝的文档，如果返回值里有 sub_code 字段说明退款失败
+                if ($ret->sub_code) {
+                    // 将退款失败的保存存入 extra 字段
+                    $extra = $order->extra;
+                    $extra['refund_failed_code'] = $ret->sub_code;
+                    // 将订单的退款状态标记为退款失败
+                    $order->update([
+                        'refund_no' => $refundNo,
+                        'refund_status' => Order::REFUND_STATUS_FAILED,
+                        'extra' => $extra,
+                    ]);
+                } else {
+                    // 将订单的退款状态标记为退款成功并保存退款订单号
+                    $order->update([
+                        'refund_no' => $refundNo,
+                        'refund_status' => Order::REFUND_STATUS_SUCCESS,
+                    ]);
+                }
+                break;
+            default:
+                // 原则上不可能出现，这个只是为了代码健壮性
+                throw new InternalException('未知订单支付方式：'.$order->payment_method);
+                break;
+        }
+    }
+
 }

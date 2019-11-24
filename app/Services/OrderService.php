@@ -23,8 +23,11 @@ use Illuminate\Support\Facades\DB;
 class OrderService
 {
 
-    public function store(User $user,UserAddress $address,$remark,$items){
-        $order=DB::transaction(function ()use($user,$address,$remark,$items){
+    public function store(User $user,UserAddress $address,$remark,$items,CouponCode $coupon = null){
+        if ($coupon) {
+            $coupon->checkAvailable($user);
+        }
+        $order=DB::transaction(function ()use($user,$address,$remark,$items,$coupon){
 //            更新地址的最后使用时间
             $address->update(['last_used_at'=>Carbon::now()]);
             //创建一个订单
@@ -54,6 +57,10 @@ class OrderService
                 $item->productSku()->associate($sku);
                 $item->save();
                 $totalAmount+=$sku->price * $data['amount'];
+                //优惠券检查
+                if ($coupon) {
+                    $coupon->checkAvailable($user, $totalAmount);
+                }
                 if($sku->decreaseStock($data['amount'])<0){
                     throw new InvalidRequestException('库存不足');
                 }
